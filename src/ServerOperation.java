@@ -1,8 +1,29 @@
-class BlockMult {
+import java.io.Serializable;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.server.RMIClientSocketFactory;
+import java.rmi.server.RMIServerSocketFactory;
+import java.rmi.server.UnicastRemoteObject;
+
+class ServerOperation extends UnicastRemoteObject implements RMIInterface {
     public static int MAX = 4;
 
+    protected ServerOperation() throws RemoteException {
+        super();
+    }
 
-    static int[][] multiplyBlock(int A[][], int B[][]) {
+    protected ServerOperation(int port) throws RemoteException {
+        super(port);
+    }
+
+    protected ServerOperation(int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
+        super(port, csf, ssf);
+    }
+
+    @Override
+    public int[][] multiplyBlock(int A[][], int B[][]) throws RemoteException {
+        System.out.println("Performing multiply");
         int C[][] = new int[MAX][MAX];
         C[0][0] = A[0][0] * B[0][0] + A[0][1] * B[1][0];
         C[0][1] = A[0][0] * B[0][1] + A[0][1] * B[1][1];
@@ -11,7 +32,9 @@ class BlockMult {
         return C;
     }
 
-    static int[][] addBlock(int A[][], int B[][]) {
+    @Override
+    public int[][] addBlock(int A[][], int B[][]) throws RemoteException {
+        System.out.println("Performing addition");
         int C[][] = new int[MAX][MAX];
         for (int i = 0; i < C.length; i++) {
             for (int j = 0; j < C.length; j++) {
@@ -21,7 +44,7 @@ class BlockMult {
         return C;
     }
 
-    static int[][] multiplyMatrixBlock(int A[][], int B[][]) {
+    int[][] multiplyMatrixBlock(int A[][], int B[][]) throws RemoteException {
         int bSize = 2;
         int[][] A1 = new int[MAX][MAX];
         int[][] A2 = new int[MAX][MAX];
@@ -95,16 +118,13 @@ class BlockMult {
 
     // driver program
     public static void main(String[] args) {
-        int A[][] = {{1, 2, 3, 4},
-                {5, 6, 7, 8},
-                {9, 10, 11, 12},
-                {13, 14, 15, 16}};
-
-        int B[][] = {{1, 2, 3, 4},
-                {5, 6, 7, 8},
-                {9, 10, 11, 12},
-                {13, 14, 15, 16}};
-
-        multiplyMatrixBlock(A, B);
+        try {
+            Naming.rebind("//localhost/MyServer", new ServerOperation());
+            System.out.println("BlockMult server is ready");
+        }
+        catch (Exception e) {
+            System.out.println("Server exception: " + e.toString());
+            e.printStackTrace();
+        }
     }
 }
