@@ -1,4 +1,3 @@
-import java.io.Serializable;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -23,7 +22,6 @@ class ServerOperation extends UnicastRemoteObject implements RMIInterface {
 
     @Override
     public int[][] multiplyBlock(int A[][], int B[][]) throws RemoteException {
-        System.out.println("Performing multiply");
         int C[][] = new int[MAX][MAX];
         C[0][0] = A[0][0] * B[0][0] + A[0][1] * B[1][0];
         C[0][1] = A[0][0] * B[0][1] + A[0][1] * B[1][1];
@@ -34,7 +32,6 @@ class ServerOperation extends UnicastRemoteObject implements RMIInterface {
 
     @Override
     public int[][] addBlock(int A[][], int B[][]) throws RemoteException {
-        System.out.println("Performing addition");
         int C[][] = new int[MAX][MAX];
         for (int i = 0; i < C.length; i++) {
             for (int j = 0; j < C.length; j++) {
